@@ -59,11 +59,11 @@ router.get('/list', function(req, res) {
         })
     })
     //功能2  点赞
-router.get('/dzan', function(req, res) {
-        var pid = req.query.pid; //该帖子pid
-        var is = req.query.is; //是否点过赞
+router.put('/dzan', function(req, res) {
+        var pid = req.body.pid; //该帖子pid
+        var is = req.body.is; //是否点过赞
         var uid = req.session.uid; //获取当前用户的uid
-        console.log(uid);
+        //console.log(uid);
         if (uid == undefined) {
             res.send({
                 code: 0, //查询编码
@@ -101,11 +101,11 @@ router.get('/dzan', function(req, res) {
     //测试http://127.0.0.1:3000/product/dzan?pid=1&is=1;
     //http://127.0.0.1:3000/user/login?uname=jia&upwd=123456;
     //3.收藏功能
-router.get('/scan', function(req, res) {
-        var pid = req.query.pid; //该帖子pid
-        var is = req.query.is; //是否点收藏过
+router.put('/scan', function(req, res) {
+        var pid = req.body.pid; //该帖子pid
+        var is = req.body.is; //是否点收藏过
         var uid = req.session.uid; //获取当前用户的uid
-        console.log(uid);
+        //console.log(uid);
         if (uid == undefined) {
             res.send({
                 code: 0, //查询编码
@@ -133,7 +133,7 @@ router.get('/sect', function(req, res) {
         var sql = "SELECT sid,sname FROM section";
         pool.query(sql, (err, result) => {
             if (err) throw err;
-            console.log(result);
+            //console.log(result);
             if (result.length > 0) {
                 res.send({
                     code: 1, //查询编码
@@ -159,7 +159,7 @@ router.get('/list1', function(req, res) {
     var data;
     var pageCount; //总页
     //查询post表内容
-    var sql = "SELECT post.pid,post.sid,post.uid,post.ptitle,post.pcontent,post.ptime,post.pzan,user.uhead,user.uname FROM post LEFT JOIN user ON post.uid=user.uid WHERE post.sid=? ORDER BY post.pzan DESC LIMIT ?,?"
+    var sql = "SELECT post.pid,post.sid,post.uid,post.ptitle,post.pcontent,post.ptime,post.pzan,user.uhead,user.uname FROM post LEFT JOIN user ON post.uid=user.uid WHERE post.sid=? ORDER BY post.pid DESC LIMIT ?,?"
     pool.query(sql, [sid, star, pcount], (err, result) => {
         if (err) throw err;
         //查询结果
@@ -197,9 +197,43 @@ router.get('/list1', function(req, res) {
 
     })
 })
-router.post("/fa", function(req, res) {
-        console.log(req);
-        res.send(req);
+router.post("/postings", function(req, res) {
+    //获取当前登录用户uid
+    var uid = req.session.uid;
+    if (uid == undefined) {
+        res.send({
+            code: 0, //查询编码
+            msg: "请登录", //原因
+        });
+    }
+    //获取版块id
+    var sid = req.body.sid;
+    //获取标题
+    var ptitle = req.body.ptitle;
+    //获取内容
+    var pcontent = req.body.pcontent;
+    //获取时间
+    var b = new Date();
+    var ptime = b.getFullYear().toString() + "-" + (b.getMonth() + 1).toString() + "-" + b.getDate().toString();
+    //console.log(ptime);
+    //zan默认0
+    //创建sql语句
+    var sql = "INSERT INTO post VALUES(null,?,?,?,?,?,DEFAULT)";
+    pool.query(sql, [sid, uid, ptitle, pcontent, ptime], (err, result) => {
+        if (err) throw err;
+        //console.log(result);
+        if (result.affectedRows > 0) {
+            res.send({
+                code: 1, //查询编码
+                msg: "发布成功" //原因
+            });
+        }
     })
+})
+//router.post("/fa", function(req, res) {
+        //console.log(JSON.parse(req));
+        //console.log(JSON.stringify(req));
+
+    //})
     //导出路由器
 module.exports = router;

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h5>123</h5>
+    <script src="socket.io.js">
+    </script>
+    <script>
+	var a='abc';
+	var b=[10,{
+	 a:10,
+	 b:20,
+	 c:30
+	}]
+        var cio = io("ws://127.0.0.1:4000");
+        //功能一:客户发服务器
+        //(1)服务器绑定事件 abc app.js
+        //(2)客户端触发事件 abc
+        cio.emit(a,b);//发送时数据到服务器
+        //功能二:服务器发数据客户
+        //(1)客户端绑定事件 cba
+        //(2)服务器触发事件
+		var uid=10;
+        cio.on(uid, (data) => {
+            console.log("服务器发送来的数据：" + data)
+			console.log(JSON.parse(data)[1])
+        })
+ a='c';
+        cio.on(a, (data) => {//监听服务器发来的的数据
+            console.log("服务器的广播" + JSON.stringify(data));
+        })
+    </script>
+</body>
+//实现论坛监听消息的功能
+要实现的场景:
+a,b,c,d,e...无数人
+一个用户b在a发的帖子下发送了一条消息;
+
+a要知道b在自己帖子里发了一条消息,但是只有a知道  [...]不知道
+ 
+ io的功能:
+ 客户端emit发数据 发给谁呢?要有一个(值),发的什么呢?要有(数据)
+ 服务端on接收数据 怎么接呢?要有一个(值)与客户端匹配,接受到的数据保存到data里
+ 服务器同理可以发消息
+
+开始功能:
+1.客户端
+设b发送内容,我给服务器发一个消息
+设变量为帖子的uid,数据为 对象{}内容有 帖子uid,pid,b自己的uid,
+
+服务器有个变量uid,接收到数据,数据为 对象{}内容有 帖子uid,pid,b自己的uid,自己消息的mid
+服务器要发消息给a,变量为对象内的uid,数据为帖子uid,pid,b自己的uid,自己消息的mid
+客户端要接受数据:变量为各自从服务器返回来的uid,各不相同,也就是指有一人能得到消息,即a
+a拿到数据,请求数据库,得到消息内容,
+ok;
+可以实现;
+总结:客户端两个一个发一个接,服务器两个,一个收一个发 
+</html>
