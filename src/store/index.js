@@ -9,7 +9,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     plugins: [createPersistedState({
         storage: window.sessionStorage, //防止页面刷新vuex内容重置问题
-        　　　reducer(val) {
+        reducer(val) {
             return {
                 // 只储存state中的isLogin
                 isLogin: val.isLogin //只保存islogin状态
@@ -18,10 +18,14 @@ export default new Vuex.Store({
     })],
     //plugins: [createPersistedState()], //防止页面刷新vuex内容重置问题
     state: {
+        tuisongMessage: "",
         uname: "",
         tabbarShow: false,
         isLogin: 0,
-        pathurl: "http://linan.applinzi.com/", //http://linan.applinzi.com
+        pathurl: "http://xingh1.applinzi.com/", 
+			//http://127.0.0.1:5050/
+			//http://linan.applinzi.com/
+		//http://xingh1.applinzi.com/
     },
     getters: {
         getTabbarShow(state) {
@@ -35,6 +39,13 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        updateMessage(state, payload) {
+
+            state.tuisongMessage = payload;
+
+
+
+        },
         setuname(state, uname) {
             state.uname = uname
         },
@@ -47,7 +58,7 @@ export default new Vuex.Store({
     },
     actions: {
         login(context, name) {
-            (async function() {
+            (async function () {
                 var result = await axios.get("user/login", { params: name });
                 console.log(result);
                 context.commit("setuname", result.data.code)

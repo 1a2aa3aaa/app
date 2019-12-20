@@ -16,21 +16,22 @@ import collect from "@/components/pr-3/collect.vue"
 import mypost from "@/components/pr-3/mypost.vue"
 import mymess from "@/components/pr-3/mymess.vue"
 import my from "@/components/pr-3/my.vue"
-import load from "@/components/pr-3/upload.vue"
 import sel from "@/components/detil/select.vue"
+import rwxx from "@/components/detil/rwxx.vue"
 import upr from "@/components/1.vue"
 import cc from "@/components/Upload.vue"
+import liaot from "@/components/pr-2/liaot.vue"
 Vue.use(Router)
-    //解决多次重复点击路由报错却不影响使用问题
+//解决多次重复点击路由报错却不影响使用问题
 const originalPush = Router.prototype.push;
 Router.prototype.push = function push(location) {
     return originalPush.call(this, location).catch(err => err);
 };
 export default new Router({
     routes: [
+        { path: '/', component: ceshi1 },
         { path: '/ceshi1', component: ceshi1 },
         { path: '/reg', component: reg },
-        { path: '/', component: load },
         { path: '/product0', component: product0 },
         { path: '/product1', component: product1 },
         { path: '/product2', component: product2 },
@@ -49,10 +50,11 @@ export default new Router({
         { path: '/mypost', component: mypost },
         { path: '/mymess', component: mymess },
         { path: '/my', component: my },
-        { path: '/load', component: load },
         { path: '/sel', component: sel },
         { path: '/upr', component: upr },
-				{ path: '/cc', component: cc },
+        { path: '/cc', component: cc },
+        { path: '/liaot/:uname/:uid', component: liaot, props: true },
+        { path: '/rwxx/:uid', component: rwxx, props: true },
         // {
         //     path: '/detil/:lid',
         //     component: detil,

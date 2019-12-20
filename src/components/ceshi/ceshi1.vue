@@ -1,120 +1,171 @@
 <template>
-<div>
-    <h3>用户登录</h3>
-            <mt-field  label="用户名" v-model="uname" 
-            placeholder="请输入用户名" type="text"></mt-field>
-            <mt-field @keyup.13.native="login" label="密码" v-model="upwd"
-            placeholder="请输入密码" type="password"></mt-field>
-            <yzm @hqyzm="hqyzm" @yzm="yzm"></yzm>
-            <mt-button size="large"  @click="login">登录</mt-button>
-            <p>没有账号?<router-link to="/reg">点击注册</router-link></p>
-</div>
-  
+  <div class="login" :style="`height:${height}`">
+    <div>
+      <img src="../../assets/logoo.png" alt />
+      <input class="suo" type="text" placeholder="请输入用户名" v-model="uname" />
+      <input
+        class="ren"
+        type="password"
+        placeholder="请输入密码"
+        v-model="upwd"
+        @keyup.13.native="login"
+      />
+      <!-- <yzm @hqyzm="hqyzm" @yzm="yzm"></yzm> -->
+      <button :class="bg" @mouseover="ent" @mouseout="lev" class="dl" @click="login">登录</button>
+      <router-link to="/reg" class="zuc">注册</router-link>
+    </div>
+  </div>
 </template>
 <script>
-import yzm from '@/components/1.vue'
- export default {
-   data(){
-       return{
-           uname:"",
-           upwd:"",
-           code:"",
-           yzmc:"",
-       }
-   },
-   components:{
-       "yzm":yzm,
+export default {
+  data() {
+    return {
+      uname: "",
+      upwd: "",
+      bg: "bg1",
+      height: `${window.innerHeight}px`,
+      syi: ""
+    };
+  },
+
+  mounted() {
+    console.log(this.height);
+  },
+  methods: {
+    ent() {
+      console.log(1);
+      this.bg = "bg2";
     },
-    mounted(){
-      
-       //绑定键盘事件
-    //    window.addEventListener('keydown', function(e){
-	// 			var key=window.event.keyCode;
-	// 			if(key==13){
-	// 				this.login();
-	// 			}
-    //         })
+    lev() {
+      console.log(2);
+      this.bg = "bg1";
+    },
+
+    login() {
+      var reg = /^\w{3,12}$/; //验证的正则表达式
+      if (reg.test(this.uname)) {
+        if (reg.test(this.upwd)) {
+          //5.发送ajax请求
+          var url = "user/login";
+          var obj = { uname: this.uname, upwd: this.upwd };
+          this.axios
+            .get(url, { params: obj })
+            .then(res => {
+              var re = res.data.code;
+              console.log(res.data);
+              if (re === 1) {
+                //6.登录成功跳转页面
+                this.$store.commit("updateisLogin", 1);
+                sessionStorage.setItem("myuid", res.data.data);
+                this.$router.push("/product0");
+              } else {
+                //7.登录失败,提示框
+                this.$toast("用户名密码错误");
+              }
+              //console.log(res);
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else {
+          this.$toast("密码格式错误");
+        }
+      } else {
+        this.$toast("用户名格式错误");
+      }
     }
-   ,
-   methods:{
-       hqyzm(value){
-           this.code = value
-           //console.log(this.code);
-       },
-       yzm(value){
-           this.yzmc = value
-           //console.log(this.yzmc);
-       },
-       login(){ 
-           if(this.yzmc==""){
-               this.$toast("验证码不能为空");
-               return;
-           }else{
-               if(this.code.toLowerCase()!=this.yzmc.toLowerCase()){
-               this.$toast("验证码错误");
-               return;
-               }
-           }
-           
-          // console.log(this.uname,this.upwd);
-           var reg=/^\w{3,12}$/;//验证的正则表达式
-           if(reg.test(this.uname)){
-               if(reg.test(this.upwd)){
-                    //5.发送ajax请求
-                    var url="user/login";
-                    var obj={uname:this.uname,upwd:this.upwd};
-                    this.axios.get(url,{params:obj}).then(res=>{
-                        var re=res.data.code;
-                        if(re===1){//6.登录成功跳转页面
-                           this.$store.commit("updateisLogin",1); 
-                           this.$router.push("/product0");
-                        }else{//7.登录失败,提示框
-                            this.$messagebox.alert("用户名密码错误")
-                        }
-                        //console.log(res);
-                    }).catch(err=>{
-                        console.log(err);
-                    })
-                    
-                    
-               }else{
-                   this.$messagebox.alert('密码格式错误');
-               }
-           }else{
-                this.$messagebox.alert('用户名格式错误');
-           }
-       }
-   }
- }
+  }
+};
 </script>
 <style scoped>
-h3{
-    margin-left: 10%;
+.sx {
+  transition: transform 1s linear;
 }
-.mint-field{
-    border-top:1px solid rgb(194, 194, 194);
-    margin-bottom: 4px;
-    width: 80%;
-    margin: auto;
+.login {
+  width: 100%;
+  background: #000;
 }
-.mint-field~.mint-field{
-    border-bottom:1px solid rgb(194, 194, 194);
+.login::before {
+  content: "";
+  display: table;
 }
-.mint-button--large{
-    background:rgb(136, 212, 226);
-    width: 80%;
-    margin: 10px auto;
+.login > div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 70px;
 }
-a >>>.mint-cell-title{
-    width: 80px;
+.login > div > img {
+  margin-bottom: 70px;
+  box-sizing: border-box;
 }
-p{
-    text-align: center;
-    font-size:0.5rem;
-    color:grey
+.login > div > input {
+  border: 0;
+  outline: 0;
+  width: 70%;
+  height: 30px;
+  margin-bottom: 10px;
+  background: 0;
+  padding-left: 50px;
+  box-sizing: border-box;
+  font-size: 1rem;
 }
-p>a{
-    text-decoration: none;
-    color:rgb(136, 212, 226);
+.login > div > .suo {
+  background: url("../../assets/ren.png") no-repeat;
+  background-size: contain;
+  background-position: left center;
+  color: #fff;
+}
+.login > div > .ren {
+  background: url("../../assets/suo.png") no-repeat;
+  background-position: left center;
+  background-size: contain;
+  color: #fff;
+  margin-bottom: 40px;
+}
+input::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #fff;
+}
+input:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #fff;
+}
+input::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #fff;
+}
+input:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #fff;
+}
+.dl,
+.zuc {
+  width: 70%;
+  height: 40px;
+  border-radius: 20px;
+  border: 0;
+  outline: 0;
+  color: white;
+  background: 0;
+}
+.zuc {
+  text-align: center;
+  line-height: 40px;
+  color: rgb(142, 164, 224);
+}
+a:hover {
+  color: #fff;
+}
+.dl {
+  font-size: 1rem;
+}
+.bg1 {
+  background: rgb(167, 167, 82);
+}
+.bg2 {
+  background: rgb(128, 128, 74);
 }
 </style>

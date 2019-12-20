@@ -10,6 +10,7 @@
   </div>
 </template>
 <script>
+// import io from "socket.io-client"
 import {mapActions,mapState,mapMutations} from "vuex"
   export default {//组件默认导出对象 
      data(){
@@ -30,6 +31,30 @@ import {mapActions,mapState,mapMutations} from "vuex"
          })
          },
          ...mapActions(["login"])
+     },
+      sockets: {
+
+            connect() {
+
+                this.id = this.$socket.id;
+
+                this.$socket.emit('abc', "loginId");      //监听connect事件
+               this.$socket.on("cba",(data)=>{
+        console.log("服务器发送数据："+data)
+      })
+            },
+
+            cba(data) {                                 //监听message事件，方法是后台定义和提供的
+                console.log(data);
+          }
+
+        },
+     created(){
+    //  var cio = io("ws://127.0.0.1:4000");
+       this.$socket.emit("abc","中午吃北平食府炸酱面");
+       this.$socket.on("cba",(data)=>{
+        console.log("服务器发送数据："+data)
+      })
      },
      computed:{
        ...mapState(["uname"])

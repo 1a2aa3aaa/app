@@ -9,11 +9,21 @@ Vue.use(Vuetouch, { name: 'v-touch' })
 import MintUI from "mint-ui"
 import "mint-ui/lib/style.css"
 Vue.use(MintUI)
-    //Vue.config.productionTip = false
+//Vue.config.productionTip = false
 import axios from "axios"
-axios.defaults.baseURL = "http://127.0.0.1:5050/"
+axios.defaults.baseURL = "http://xingh1.applinzi.com/"
+//http://xingh1.applinzi.com/
+//http://127.0.0.1:5050/
 axios.defaults.withCredentials = true
 Vue.prototype.axios = axios;
+import VueSocketio from 'vue-socket.io';
+
+Vue.use(new VueSocketio({
+    debug: true,
+    connection: 'ws://xhai.applinzi.com',
+		//ws://xingh.applinzi.com:4000
+	//ws://127.0.0.1:4000
+}))
 /* eslint-disable no-new */
 // 10:注册vuex
 //Vue.use(Vuex)

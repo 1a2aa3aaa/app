@@ -1,102 +1,102 @@
 <template>
-<div>
-  <top></top>
-  <ul>
-    <li v-for="(v,i) of data" :key="i">
-      <router-link :to="`detil?pid=${v.pid}`">
-        <!-- 头像 -->
-            <img class="imgs" :src="`${$store.state.pathurl}${v.uhead}`" alt=""/>
-          <!-- 名字,内容 -->
-          <div class="cons">
-              <p>{{v.uname}}</p>
-              <p>{{v.mcontent}}
-              </p>
-          </div>
-          <!--  -->
-          <div class="titles">
-            <!-- 我的帖子 -->
-            {{v.ptitle}}
-          </div>
-      </router-link>
-    </li>
-  </ul>
-</div>
-  
+  <div>
+    <subTop :xi="xi"></subTop>
+    <ul class="ren">
+      <li v-for="(item,index) of ren" :key="index">
+        <router-link :to="`/liaot/${item.uname}/${item.uid}`">
+          <img :src="`${$store.state.pathurl}${item.uhead}`" />
+          <p>
+            {{item.uname}}
+            <br />
+            <span class="grey" v-if="shei==item.tauid">{{con}}</span>
+          </p>
+          <span class="red-radius" v-if="shei==item.tauid">!</span>
+        </router-link>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 // 引入制定的子组件
-  import top from "../pr-0/pr-t.vue"
-   export default{
-    //   注册子组件
-    data(){
-        return{
-            url:"product/list1",
-            data:[],
+import subTop from "@/components/pr-1/publish/pub-top.vue";
+export default {
+  sockets: {
+    receiveMessage(data) {
+      //监听cba事件，方法是后台定义和提供的
+      var obj = JSON.parse(data);
+      console.log(obj);
+      this.shei = obj.username;
+      this.con = obj.mes;
+    }
+  },
+  data() {
+    return {
+      xi: "聊天",
+      ren: [],
+      shei: "",
+      con: ""
+    };
+  },
+
+  components: {
+    subTop: subTop
+  },
+  created() {
+    this.shei = this.$store.state.tuisongMessage.username;
+    this.con = this.$store.state.tuisongMessage.mes;
+    var myuid = sessionStorage.getItem("myuid");
+    this.axios.get("detail/liao").then(res => {
+      var arr = res.data.data;
+      console.log(arr);
+      var obj = {};
+      for (var item of arr) {
+        if (!obj[item.uid]) {
+          console.log(item);
+          this.ren.push(item);
+          obj[item.uid] = 1;
         }
-    },
-    components:{
-      "top":top,
-    },
-    created(){ 
-      var url='detail/hcont';
-      this.axios.get(url).then(res=>{
-           //console.log(res);
-           if(res.data.code==1){
-              this.data=res.data.data;
-             // console.log(this.data);
-           }
-         })
-    }
-    }
+      }
+      //this.ren = res.data.data;
+      console.log(this.ren);
+    });
+  }
+};
 </script>
 <style scoped>
- ul{
-   /* border:1px solid red; */
-   padding: 40px 10px 0 10px;
- }
- ul>li{
-   list-style: none;
-   /* border:1px solid rgb(38, 207, 66); */
- }
- ul>li>a{
-   text-decoration: none;
-   display: flex;
-   justify-content: left;
-   height:60px;
- }
-  ul>li>a>.imgs{
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-  }
-  ul>li>a>.cons{
-    /* border:1px solid rgb(83, 38, 207); */
-    width: 70%;
-    padding: 7px 10px;
-    box-sizing: border-box;
-  }
-  ul>li>a>.cons>p{
-    margin: 0;
-    font-size: 0.9rem;
-  }
-  ul>li>a>.cons>p:nth-child(1){
-    color:rgb(136, 212, 226);
-    font-size: 1rem;
-    margin-bottom:5px; 
-  }
-  ul>li>a>.cons>p:nth-child(2){
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  ul>li>a>.titles{
-      width: 48px;
-      margin: 4px;
-      padding: 0 4px;
-      font-size: 0.85rem;
-    background: #aaa;
-    color:#fff;
-    word-wrap:break-word ;
-    overflow: hidden;
-     text-overflow: ellipsis;
-  }
+.grey {
+  font-size: 0.7rem;
+  color: rgb(209, 209, 209);
+}
+.red-radius {
+  margin-top: -15px;
+  margin-left: 5px;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: red;
+  text-align: center;
+  color: #fff;
+}
+.ren {
+  margin-top: 50px;
+  width: 100%;
+  list-style: none;
+  padding: 10px;
+}
+.ren > li > a {
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+  display: flex;
+  color: #000;
+  text-decoration: none;
+  justify-content: flex-start;
+  align-items: center;
+}
+.ren > li > a > img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
 </style>

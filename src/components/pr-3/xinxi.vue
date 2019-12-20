@@ -136,8 +136,9 @@
                 var fd = new FormData();
                 fd.append('logo', file);
                 var xhr = new XMLHttpRequest();
-                // http://linan.applinzi.com/
-                xhr.open('POST','http://linan.applinzi.com/upload', true);
+                // http://xingh1.applinzi.com/
+		//http://127.0.0.1:5050/
+                xhr.open('POST','http://xingh1.applinzi.com/upload', true);
                 xhr.onreadystatechange=function(){
                 if(xhr.readyState==4&&xhr.status){
                     var result=xhr.responseText;
